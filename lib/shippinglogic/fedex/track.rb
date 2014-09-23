@@ -16,14 +16,14 @@ module Shippinglogic
     #
     #   tracking.status
     #   # => "Delivered"
-    #   
+    #
     #   tracking.signature_name
     #   # => "KKING"
-    #   
+    #
     #   tracking.events.first
     #   # => #<Shippinglogic::FedEx::Track::Event @postal_code="95817", @name="Delivered", @state="CA", @residential=false,
     #   #     @city="Sacramento", @type="DL", @country="US", @occured_at=Mon Dec 08 10:43:37 -0500 2008>
-    #   
+    #
     #   tracking.events.first.name
     #   # => "Delivered"
     #
@@ -37,7 +37,7 @@ module Shippinglogic
       class Details
         # Each tracking result is an object of this class
         class Event; attr_accessor :name, :type, :occured_at, :city, :state, :postal_code, :country, :residential; end
-        
+
         attr_accessor :origin_city,
           :origin_state,
           :origin_country,
@@ -51,33 +51,33 @@ module Shippinglogic
           :status,
           :delivery_at,
           :events
-        
+
         def origin_residential?
           origin_residential == true
         end
-        
+
         def destination_residential?
           destination_residential == true
         end
-        
+
         def initialize(response)
           details = response[:track_details]
-          
+
           self.origin_city = details[:origin_location_address][:city]
           self.origin_state = details[:origin_location_address][:state_or_province_code]
           self.origin_country = details[:origin_location_address][:country_code]
           self.origin_residential = details[:origin_location_address][:residential] == "true"
-          
+
           self.destination_city = details[:destination_address][:city]
           self.destination_state = details[:destination_address][:state_or_province_code]
           self.destination_country = details[:destination_address][:country_code]
           self.destination_residential = details[:destination_address][:residential] == "true"
-          
+
           self.signature_name = details[:delivery_signature_name]
           self.service_type = details[:service_type]
           self.status = details[:status_description]
           self.delivery_at = Time.parse(details[:actual_delivery_timestamp])
-          
+
           self.events = response[:track_details][:events].collect do |details|
             event = Event.new
             event.name = details[:event_description]
@@ -92,33 +92,33 @@ module Shippinglogic
           end
         end
       end
-      
+
       VERSION = {:major => 3, :intermediate => 0, :minor => 0}
-      
+
       attribute :tracking_number, :string
-      
+
       private
-        # The parent class Service requires that we define this method. This is our kicker. This method is only
-        # called when we need to deal with information from FedEx. Notice the caching into the @target variable.
-        def target
-          @target ||= Details.new(request(build_request))
-        end
-        
-        # Just building some XML to send off to FedEx. FedEx require this particualr format.
-        def build_request
-          b = builder
-          xml = b.TrackRequest(:xmlns => "http://fedex.com/ws/track/v#{VERSION[:major]}") do
-            build_authentication(b)
-            build_version(b, "trck", VERSION[:major], VERSION[:intermediate], VERSION[:minor])
-            
-            b.PackageIdentifier do
-              b.Value tracking_number
-              b.Type "TRACKING_NUMBER_OR_DOORTAG"
-            end
-            
-            b.IncludeDetailedScans true
+      # The parent class Service requires that we define this method. This is our kicker. This method is only
+      # called when we need to deal with information from FedEx. Notice the caching into the @target variable.
+      def target
+        @target ||= Details.new(request(build_request))
+      end
+
+      # Just building some XML to send off to FedEx. FedEx require this particualr format.
+      def build_request
+        b = builder
+        xml = b.TrackRequest(:xmlns => "http://fedex.com/ws/track/v#{VERSION[:major]}") do
+          build_authentication(b)
+          build_version(b, "trck", VERSION[:major], VERSION[:intermediate], VERSION[:minor])
+
+          b.PackageIdentifier do
+            b.Value tracking_number
+            b.Type "TRACKING_NUMBER_OR_DOORTAG"
           end
+
+          b.IncludeDetailedScans true
         end
+      end
     end
   end
 end

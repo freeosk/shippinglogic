@@ -19,7 +19,7 @@ module Shippinglogic
     class Error < Shippinglogic::Error
       def initialize(request, response)
         super
-        
+
         if response.blank?
           add_error("The response from UPS was blank.")
         elsif !response.is_a?(Hash)
@@ -34,8 +34,7 @@ module Shippinglogic
             "was in an unexpected format. You might try glancing at the raw response by using the 'response' method on this error object."
           )
         end
-        
-        super(errors.collect { |error| error[:message] }.join(", "))
+
       end
     end
   end

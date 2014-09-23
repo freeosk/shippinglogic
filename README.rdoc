@@ -1,8 +1,6 @@
 = Shippinglogic
 
-== <b>Please note, this library is no longer supported and is being deprecated. A replacement is being worked on that will allow for a seamless transition should use choose to do so.</b>
-
-The goal of this library is to provide simple and straight forward interfaces to the various shipping web services: FedEx, UPS, USPS, etc. (Only FedEx is supported at this time)
+The goal of this library is to provide simple and straight forward interfaces to the various shipping web services: FedEx and UPS
 
 == Helpful links
 

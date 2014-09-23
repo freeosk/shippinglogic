@@ -55,28 +55,28 @@ module Shippinglogic
       self.meter = meter
       self.options = self.class.options.merge(options)
     end
-    
+
     # A convenience method for accessing the endpoint URL for the FedEx API.
     def url
       options[:test] ? options[:test_url] : options[:production_url]
     end
-    
+
     def cancel(attributes = {})
       @cancel ||= Cancel.new(self, attributes)
     end
-    
+
     def rate(attributes = {})
       @rate ||= Rate.new(self, attributes)
     end
-    
+
     def ship(attributes = {})
       @ship ||= Ship.new(self, attributes)
     end
-    
+
     def signature(attributes = {})
       @signature ||= Signature.new(self, attributes)
     end
-    
+
     def track(attributes = {})
       @track ||= Track.new(self, attributes)
     end
