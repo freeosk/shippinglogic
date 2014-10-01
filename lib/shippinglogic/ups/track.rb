@@ -45,7 +45,7 @@ module Shippinglogic
         attr_accessor :origin_city, :origin_state, :origin_country,
           :destination_city, :destination_state, :destination_country, :destination_zip,
           :signature_name, :service_type, :status, :delivery_at, :estimated_delivery_at,
-          :events, :pickup_date
+          :events, :ship_date
 
         def initialize(response)
           details = response[:shipment]
@@ -73,9 +73,9 @@ module Shippinglogic
           self.signature_name        = last_event && last_event[:signed_for_by_name]
           self.service_type          = details[:service][:description]
           self.status                = details.fetch(:current_status, {})[:description]
-          self.delivery_at           = delivery && Time.parse(delivery[:date] + delivery[:time])
+          self.ship_date           = delivery && Time.parse(delivery[:date] + delivery[:time])
           self.estimated_delivery_at = estimated_delivery && Time.parse(estimated_delivery[:date] + estimated_delivery[:time])
-          self.pickup_date           = pickup_date && Time.parse(pickup_date)
+          self.delivery_at           = pickup_date && Time.parse(pickup_date)
 
           #I don't need events right now
           #TODO: modify this to comply with new format

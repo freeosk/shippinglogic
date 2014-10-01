@@ -38,19 +38,9 @@ module Shippinglogic
         # Each tracking result is an object of this class
         class Event; attr_accessor :name, :type, :occured_at, :city, :state, :postal_code, :country, :residential; end
 
-        attr_accessor :origin_city,
-          :origin_state,
-          :origin_country,
-          :origin_residential,
-          :destination_city,
-          :destination_state,
-          :destination_country,
-          :destination_residential,
-          :signature_name,
-          :service_type,
-          :status,
-          :delivery_at,
-          :events
+        attr_accessor :origin_city, :origin_state, :origin_country, :origin_residential,
+          :destination_city, :destination_state, :destination_country, :destination_residential,
+          :signature_name, :service_type, :status, :delivery_at, :events, :estimated_delivery_at, :ship_date
 
         def origin_residential?
           origin_residential == true
@@ -77,19 +67,21 @@ module Shippinglogic
           self.service_type = details[:service_type]
           self.status = details[:status_description]
           self.delivery_at = Time.parse(details[:actual_delivery_timestamp])
+          self.estimated_delivery_at = nil
+          self.ship_date = Time.parse(details[:ship_timestamp])
 
-          self.events = response[:track_details][:events].collect do |details|
-            event = Event.new
-            event.name = details[:event_description]
-            event.type = details[:event_type]
-            event.occured_at = Time.parse(details[:timestamp])
-            event.city = details[:address][:city]
-            event.state = details[:address][:state_or_province_code]
-            event.postal_code = details[:address][:postal_code]
-            event.country = details[:address][:country_code]
-            event.residential = details[:address][:residential] == "true"
-            event
-          end
+          #self.events = response[:track_details][:events].collect do |details|
+          #  event = Event.new
+          #  event.name = details[:event_description]
+          #  event.type = details[:event_type]
+          #  event.occured_at = Time.parse(details[:timestamp])
+          #  event.city = details[:address][:city]
+          #  event.state = details[:address][:state_or_province_code]
+          #  event.postal_code = details[:address][:postal_code]
+          #  event.country = details[:address][:country_code]
+          #  event.residential = details[:address][:residential] == "true"
+          #  event
+          #end
         end
       end
 
