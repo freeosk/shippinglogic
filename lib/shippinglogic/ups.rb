@@ -20,7 +20,7 @@ module Shippinglogic
     def self.options
       @options ||= {
         :test => !!(defined?(Rails) && !Rails.env.production?),
-        :production_url => "https://www.ups.com:443/ups.app/xml",
+        :production_url => "https://onlinetools.ups.com/ups.app/xml",
         :test_url => "https://wwwcie.ups.com:443/ups.app/xml"
       }
     end

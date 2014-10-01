@@ -43,9 +43,9 @@ module Shippinglogic
         class Event; attr_accessor :name, :type, :occured_at, :city, :state, :postal_code, :country; end
 
         attr_accessor :origin_city, :origin_state, :origin_country,
-          :destination_city, :destination_state, :destination_country,
-          :signature_name, :service_type, :status, :delivery_at,
-          :events
+          :destination_city, :destination_state, :destination_country, :destination_zip,
+          :signature_name, :service_type, :status, :delivery_at, :estimated_delivery_at,
+          :events, :pickup_date
 
         def initialize(response)
           details = response[:shipment]
@@ -59,33 +59,40 @@ module Shippinglogic
           if destination = details.fetch(:ship_to, {})[:address]
             self.destination_city     = destination[:city]
             self.destination_state    = destination[:state_province_code]
+            self.destination_zip      = destination[:postal_code]
             self.destination_country  = destination[:country_code]
           end
 
-          package     = details[:package]
-          events      = package[:activity].is_a?(Array) ? package[:activity] : [package[:activitiy]].compact
-          last_event  = events.first
-          delivery    = events.detect{|e| e[:status][:status_type][:code] == "D" }
+          package            = details[:package]
+          events             = details[:activity].is_a?(Array) ? details[:activity] : [details[:activitiy]].compact
+          last_event         = events.first
+          delivery           = details.fetch(:delivery_details, {})[:delivery_date]
+          estimated_delivery = details.fetch(:estimated_delivery_details, {})
+          pickup_date        = details[:pickup_date]
 
-          self.signature_name = last_event && last_event[:signed_for_by_name]
-          self.service_type   = details[:service][:description]
-          self.status         = last_event && last_event[:status][:status_type][:description]
-          self.delivery_at    = delivery && Time.parse(delivery[:date] + delivery[:time])
+          self.signature_name        = last_event && last_event[:signed_for_by_name]
+          self.service_type          = details[:service][:description]
+          self.status                = details.fetch(:current_status, {})[:description]
+          self.delivery_at           = delivery && Time.parse(delivery[:date] + delivery[:time])
+          self.estimated_delivery_at = estimated_delivery && Time.parse(estimated_delivery[:date] + estimated_delivery[:time])
+          self.pickup_date           = pickup_date && Time.parse(pickup_date)
 
-          self.events = events.collect do |details|
-            event             = Event.new
-            status            = details[:status][:status_type]
-            event.name        = status[:description]
-            event.type        = status[:code]
-            #FIXME The proper spelling is "occurred", not "occured."
-            event.occured_at  = Time.parse(details[:date] + details[:time])
-            location          = details[:activity_location][:address]
-            event.city        = location[:city]
-            event.state       = location[:state_province_code]
-            event.postal_code = location[:postal_code]
-            event.country     = location[:country_code]
-            event
-          end
+          #I don't need events right now
+          #TODO: modify this to comply with new format
+          #self.events = events.collect do |details|
+          #  event             = Event.new
+          #  status            = details[:status][:status_type]
+          #  event.name        = status[:description]
+          #  event.type        = status[:code]
+          #  #FIXME The proper spelling is "occurred", not "occured."
+          #  event.occured_at  = Time.parse(details[:date] + details[:time])
+          #  location          = details[:activity_location][:address]
+          #  event.city        = location[:city]
+          #  event.state       = location[:state_province_code]
+          #  event.postal_code = location[:postal_code]
+          #  event.country     = location[:country_code]
+          #  event
+          #end
         end
       end
 
@@ -107,14 +114,11 @@ module Shippinglogic
 
         b.TrackRequest do
           b.Request do
-            b.TransactionReference do
-              b.CustomerContext "QAST Track"
-              b.XpciVersion "1.0"
-            end
             b.RequestAction "Track"
             b.RequestOption "activity"
           end
 
+          b.IncludeFreight "01"
           b.TrackingNumber tracking_number
         end
       end
