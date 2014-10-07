@@ -66,9 +66,9 @@ module Shippinglogic
           self.signature_name = details[:delivery_signature_name]
           self.service_type = details[:service_type]
           self.status = details[:status_description]
-          self.delivery_at = Time.parse(details[:actual_delivery_timestamp])
-          self.estimated_delivery_at = nil
-          self.ship_date = Time.parse(details[:ship_timestamp])
+          self.delivery_at = Time.parse(details[:actual_delivery_timestamp]) rescue nil
+          self.estimated_delivery_at = Time.parse(details[:estimated_delivery_timestamp]) rescue nil
+          self.ship_date = Time.parse(details[:ship_timestamp]) rescue nil
 
           #self.events = response[:track_details][:events].collect do |details|
           #  event = Event.new
