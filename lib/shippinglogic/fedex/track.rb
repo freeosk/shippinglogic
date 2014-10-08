@@ -53,15 +53,19 @@ module Shippinglogic
         def initialize(response)
           details = response[:track_details]
 
-          self.origin_city = details[:origin_location_address][:city]
-          self.origin_state = details[:origin_location_address][:state_or_province_code]
-          self.origin_country = details[:origin_location_address][:country_code]
-          self.origin_residential = details[:origin_location_address][:residential] == "true"
+          if details[:origin_location_address]
+            self.origin_city = details[:origin_location_address][:city]
+            self.origin_state = details[:origin_location_address][:state_or_province_code]
+            self.origin_country = details[:origin_location_address][:country_code]
+            self.origin_residential = details[:origin_location_address][:residential] == "true"
+          end
 
-          self.destination_city = details[:destination_address][:city]
-          self.destination_state = details[:destination_address][:state_or_province_code]
-          self.destination_country = details[:destination_address][:country_code]
-          self.destination_residential = details[:destination_address][:residential] == "true"
+          if details[:destination_address]
+            self.destination_city = details[:destination_address][:city]
+            self.destination_state = details[:destination_address][:state_or_province_code]
+            self.destination_country = details[:destination_address][:country_code]
+            self.destination_residential = details[:destination_address][:residential] == "true"
+          end
 
           self.signature_name = details[:delivery_signature_name]
           self.service_type = details[:service_type]
