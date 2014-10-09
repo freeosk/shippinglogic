@@ -51,7 +51,7 @@ module Shippinglogic
         end
 
         def initialize(response)
-          details = response[:track_details]
+          details = response.fetch(:track_details, {})
 
           if details[:origin_location_address]
             self.origin_city = details[:origin_location_address][:city]

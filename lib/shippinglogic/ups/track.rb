@@ -48,7 +48,7 @@ module Shippinglogic
           :events, :ship_date
 
         def initialize(response)
-          details = response[:shipment]
+          details = response.fetch(:shipment, {})
 
           if origin = details.fetch(:shipper, {})[:address]
             self.origin_city    = origin[:city]
