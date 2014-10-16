@@ -52,6 +52,7 @@ module Shippinglogic
 
         def initialize(response)
           details = response.fetch(:track_details, {})
+          details = details.first if details.is_a? Array
 
           if details[:origin_location_address]
             self.origin_city = details[:origin_location_address][:city]
@@ -69,7 +70,7 @@ module Shippinglogic
 
           self.signature_name = details[:delivery_signature_name]
           self.service_type = details[:service_type]
-          self.status = details[:status_description]
+          self.status = details[:status_description] || details[:notification][:severity]
           self.delivery_at = Time.parse(details[:actual_delivery_timestamp]) rescue nil
           self.estimated_delivery_at = Time.parse(details[:estimated_delivery_timestamp]) rescue nil
           self.ship_date = Time.parse(details[:ship_timestamp]) rescue nil
