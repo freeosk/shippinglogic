@@ -75,7 +75,7 @@ module Shippinglogic
           self.delivery_at = Time.parse(details[:actual_delivery_timestamp]) rescue nil
           self.estimated_delivery_at = Time.parse(details[:estimated_delivery_timestamp]) rescue nil
           self.ship_date = Time.parse(details[:ship_timestamp]) rescue nil
-          self.duplicated_waybill = response.try(:duplicated_waybill)
+          self.duplicated_waybill = response[:duplicate_waybill] == 'true'
 
           #self.events = response[:track_details][:events].collect do |details|
           #  event = Event.new
