@@ -75,9 +75,9 @@ module Shippinglogic
           self.signature_name        = last_event && last_event[:signed_for_by_name]
           self.service_type          = details[:service][:description]
           self.status                = details.fetch(:current_status, {})[:description]
-          self.ship_date           = delivery && Time.parse(delivery[:date] + delivery[:time])
+          self.ship_date             = pickup_date && Time.parse(pickup_date)
           self.estimated_delivery_at = estimated_delivery && Time.parse(estimated_delivery[:date] + estimated_delivery[:time])
-          self.delivery_at           = pickup_date && Time.parse(pickup_date)
+          self.delivery_at           = delivery && Time.parse(delivery[:date] + delivery[:time])
 
           #I don't need events right now
           #TODO: modify this to comply with new format
