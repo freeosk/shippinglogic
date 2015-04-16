@@ -33,6 +33,8 @@ module Shippinglogic
     # These are not supported and probably won't be until someone needs them. It should
     # be fairly simple to add, but I could not think of a reason why anyone would want to track
     # a package with anything other than a tracking number.
+    #
+    # duplicated_waybill is a placeholder because UPS does not support error
     class Track < Service
       def self.path
         "/Track"
@@ -45,7 +47,7 @@ module Shippinglogic
         attr_accessor :origin_city, :origin_state, :origin_country,
           :destination_city, :destination_state, :destination_country, :destination_zip,
           :signature_name, :service_type, :status, :delivery_at, :estimated_delivery_at,
-          :events, :ship_date
+          :events, :ship_date, :duplicated_waybill
 
         def initialize(response)
           details = response.fetch(:shipment, {})
