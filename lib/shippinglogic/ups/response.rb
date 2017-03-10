@@ -10,7 +10,7 @@ module Shippinglogic
 
       # Overwriting the request method to clean the response and handle errors.
       def request(body)
-        response = clean_response(super)
+        response = clean_response(super.parsed_response)
 
         if success?(response)
           response
