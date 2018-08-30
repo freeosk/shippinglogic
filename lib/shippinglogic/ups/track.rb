@@ -78,7 +78,7 @@ module Shippinglogic
           self.status                = details.fetch(:current_status, {})[:description] || package.fetch(:activity, {}).first[:status][:status_type][:description] rescue nil
           self.ship_date             = pickup_date && Time.parse(pickup_date)
           self.estimated_delivery_at = estimated_delivery && estimated_delivery[:date] &&  estimated_delivery[:time] && Time.parse(estimated_delivery[:date] + estimated_delivery[:time])
-          self.delivery_at           = delivery_date ? delivery_date && Time.parse(delivery_date) : Time.parse(delivery[:date] + delivery[:time])
+          self.delivery_at           = delivery_date && !delivery_date.empty? ? delivery_date && Time.parse(delivery_date) : delivery && Time.parse(delivery[:date] + delivery[:time])
 
           #I don't need events right now
           #TODO: modify this to comply with new format
