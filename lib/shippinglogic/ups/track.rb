@@ -69,16 +69,16 @@ module Shippinglogic
           events             = details[:activity].is_a?(Array) ? details[:activity] : [details[:activitiy]].compact
           last_event         = events.first
           delivery           = details.fetch(:delivery_details, {})[:delivery_date]
-          delivery_date      = package.fetch(:delivery_date, {})
+          delivery_date      = package.fetch(:delivery_date, {}) rescue nil
           estimated_delivery = details.fetch(:estimated_delivery_details, {})
           pickup_date        = details[:pickup_date]
 
           self.signature_name        = last_event && last_event[:signed_for_by_name]
           self.service_type          = details[:service][:description]
-          self.status                = package.fetch(:activity, {}).first[:status][:status_type][:description] rescue nil
+          self.status                = details.fetch(:current_status, {})[:description] || package.fetch(:activity, {}).first[:status][:status_type][:description] rescue nil
           self.ship_date             = pickup_date && Time.parse(pickup_date)
           self.estimated_delivery_at = estimated_delivery && estimated_delivery[:date] &&  estimated_delivery[:time] && Time.parse(estimated_delivery[:date] + estimated_delivery[:time])
-          self.delivery_at           = delivery_date && Time.parse(delivery_date)
+          self.delivery_at           = delivery_date ? delivery_date && Time.parse(delivery_date) : Time.parse(delivery[:date] + delivery[:time])
 
           #I don't need events right now
           #TODO: modify this to comply with new format
